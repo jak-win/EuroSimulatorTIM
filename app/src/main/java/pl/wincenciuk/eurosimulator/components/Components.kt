@@ -17,10 +17,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val background_color = Color(0xFF104977)
+val green_check = Color(0xFF0F7012)
 @Composable
 fun InputField(
     modifier: Modifier = Modifier,
@@ -58,23 +60,29 @@ fun ScoreInputField(
     isSingleLine: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Done,
-    onAction: KeyboardActions = KeyboardActions.Default
+    onAction: KeyboardActions = KeyboardActions.Default,
+    onScoreChanged: (String) -> Unit
 ) {
     OutlinedTextField(
         value = valueState.value,
-        onValueChange = { valueState.value = it },
+        onValueChange = { valueState.value = it
+            onScoreChanged(it)
+                        },
         label = { Text(text = labelId) },
         singleLine = isSingleLine,
         textStyle = TextStyle(
-            fontSize = 22.sp,
-            color = MaterialTheme.colors.onBackground
+            fontSize = 21.sp,
+            color = MaterialTheme.colors.onBackground,
+            textAlign = TextAlign.Center,
         ),
         modifier = modifier
-            .size(width = 55.dp, height = 70.dp)
+            .size(width = 65.dp, height = 70.dp)
             .padding(bottom = 3.dp, start = 3.dp, end = 3.dp),
 //            .fillMaxWidth(),
         enabled = enabled,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction)
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+        keyboardActions = onAction,
+        colors = TextFieldDefaults.textFieldColors()
     )
 }
 
@@ -148,7 +156,8 @@ fun ScoreInput(
     labelId: String = "",
     enabled: Boolean = true,
     imeAction: ImeAction = ImeAction.Next,
-    onAction: KeyboardActions = KeyboardActions.Default
+    onAction: KeyboardActions = KeyboardActions.Default,
+    onScoreChanged: (String) -> Unit
 ) {
     ScoreInputField(
         modifier = modifier,
@@ -157,6 +166,7 @@ fun ScoreInput(
         enabled = enabled,
         keyboardType = KeyboardType.Number,
         imeAction = imeAction,
-        onAction = onAction
+        onAction = onAction,
+        onScoreChanged = onScoreChanged
     )
 }
