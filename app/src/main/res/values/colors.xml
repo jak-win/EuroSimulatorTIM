@@ -9,5 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="backg">#104977</color>
     <color name="green_check">#0F7012</color>
+    <color name="little_green_check">#69FF6D</color>
+    <color name="txtfld_backg">#606060</color>
 
 </resources>

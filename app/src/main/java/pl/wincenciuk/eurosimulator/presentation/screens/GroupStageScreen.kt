@@ -26,16 +26,17 @@ import pl.wincenciuk.eurosimulator.R
 import pl.wincenciuk.eurosimulator.components.ScoreInput
 import pl.wincenciuk.eurosimulator.components.background_color
 import pl.wincenciuk.eurosimulator.components.green_check
+import pl.wincenciuk.eurosimulator.components.little_green_check
 
 @Composable
 fun GroupStageScreen() {
     val groups = listOf("A", "B", "C", "D", "E", "F")
     val (teams) = remember {
         mutableStateOf(listOf(
-            Team("Poland","POL", 0, 0, 0, 0, 0),
-            Team("Germany","GER", 0, 0, 0, 0, 0),
-            Team("France", "FRA",0, 0, 0, 0, 0),
-            Team("Spain", "SPA", 0, 0, 0, 0, 0)
+            Team("Poland","POL"),
+            Team("Germany","GER"),
+            Team("France", "FRA"),
+            Team("Spain", "SPA")
         ))
     }
     val (matchResult, setMatchResult) = remember { mutableStateOf(MutableList(6) { MatchResult(0, 0) })  }
@@ -154,12 +155,14 @@ fun MatchResultInput(
 
     val scoreA = rememberSaveable() { mutableStateOf(matchResult.scoreA.toString()) }
     val scoreB = rememberSaveable() { mutableStateOf(matchResult.scoreB.toString()) }
+    val showPredictions = remember { mutableStateOf(false) }
+    val buttonEnabled = remember { mutableStateOf(true) }
+    
     Surface(
         modifier = Modifier
-            .padding(7.dp)
-            .padding(top = 10.dp),
-        color = Color.LightGray,
-        shape = RoundedCornerShape(40.dp), //30
+            .padding(start = 7.dp, end = 7.dp, top = 20.dp),
+        color = Color.Gray,
+        shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp), //30
         border = BorderStroke(3.dp, Color.White),
         elevation = 10.dp
     ) {
@@ -167,7 +170,7 @@ fun MatchResultInput(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp)
-                .padding(start = 15.dp, end = 15.dp),
+                .padding(start = 15.dp, end = 15.dp, bottom = 5.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -192,7 +195,6 @@ fun MatchResultInput(
                 enabled = true,
                 onScoreChanged = {newScore ->
                     scoreA.value = newScore
-//                    onResultChanged(MatchResult(scoreA.value.toIntOrNull()?: 0, scoreB.value.toIntOrNull()?: 0))
                 }
             )
             Column(
@@ -204,10 +206,15 @@ fun MatchResultInput(
                     modifier = Modifier.padding(top = 40.dp,bottom = 12.dp),
                     textAlign = TextAlign.Center)
                 Button(
-                    onClick = { onResultChanged(MatchResult(scoreA.value.toIntOrNull() ?: 0, scoreB.value.toIntOrNull() ?: 0)) },
+                    onClick = {
+                              onResultChanged(MatchResult(scoreA.value.toIntOrNull() ?: 0, scoreB.value.toIntOrNull() ?: 0))
+                              showPredictions.value = true
+                              buttonEnabled.value = false
+                              },
                     modifier = Modifier.size(34.dp),
                     shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(backgroundColor = green_check, contentColor = Color.White)) {
+                    colors = ButtonDefaults.buttonColors(backgroundColor = green_check, contentColor = Color.White, disabledBackgroundColor = little_green_check),
+                    enabled = buttonEnabled.value) {
                     Text(text = "✓", fontSize = 12.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
                 }
             }
@@ -215,7 +222,6 @@ fun MatchResultInput(
             ScoreInput(scoreState = scoreB,
                 onScoreChanged = { newScore ->
                     scoreB.value = newScore
-//                    onResultChanged(MatchResult(scoreA.value.toIntOrNull() ?: 0, scoreB.value.toIntOrNull() ?: 0))
                 })
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -235,55 +241,55 @@ fun MatchResultInput(
             }
         }
     }
+    Surface(modifier = Modifier.padding(start = 7.dp, end = 7.dp),
+        color = Color.White,
+        shape = RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp), //30
+        elevation = 10.dp) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp, bottom = 5.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+        if (!showPredictions.value){
+        Text(
+            text = "Confirm the result to see other players predictions",
+            modifier = Modifier.padding(7.dp),
+            textAlign = TextAlign.Center)
+        } else {
+
+                Text(text = "33%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(text = "34%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(text = "33%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
 }
 @Composable
 fun TeamTable(teams: List<Team>) {
+    val sortedTeams = teams.sortedByDescending { it.points }
+
     Column(modifier = Modifier.padding(3.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val headerTitles = listOf("M", "W", "D", "L", "Pts")
             Text(
                 "Country",
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.width(150.dp)
             )
-            Text(
-                "M",
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(50.dp)
-            )
-            Text(
-                "W",
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(50.dp)
-            )
-            Text(
-                "D",
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(50.dp)
-            )
-            Text(
-                "L",
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(50.dp)
-            )
-            Text(
-                "Pts",
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(50.dp)
-            )
+            headerTitles.forEach { titles ->
+                Text(
+                    text = titles,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(50.dp)
+                )
+            }
         }
 
-
-        teams.forEachIndexed { index, team ->
+        sortedTeams.forEachIndexed { index, team ->
             Surface(color = Color.White) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -302,39 +308,24 @@ fun TeamTable(teams: List<Team>) {
                             .width(120.dp)
                             .padding(start = 10.dp)
                     )
-                    Text(
-                        team.matchesPlayed.toString(),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(50.dp)
-                    )
-                    Text(
-                        team.matchesWon.toString(),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(50.dp)
-                    )
-                    Text(
-                        team.matchesDrawn.toString(),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(50.dp)
-                    )
-                    Text(
-                        team.matchesLost.toString(),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(50.dp)
-                    )
-                    Text(
-                        team.points.toString(),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(50.dp)
-                    )
+                    listOf(
+                        team.matchesPlayed,
+                        team.matchesWon,
+                        team.matchesDrawn,
+                        team.matchesLost,
+                        team.points).forEach { value ->
+                        Text(
+                            text = value.toString(),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.width(50.dp)
+                        )
+                    }
                 }
                 Divider(thickness = 2.dp)
-
             }
         }
     }
 }
-
 
 data class Team(
     val name: String,

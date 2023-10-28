@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.sp
 
 val background_color = Color(0xFF104977)
 val green_check = Color(0xFF0F7012)
+val little_green_check = Color(0xFFAEFFB0)
+val txtfld_backg = Color(0xFFA09D9D)
 @Composable
 fun InputField(
     modifier: Modifier = Modifier,
@@ -71,18 +73,18 @@ fun ScoreInputField(
         label = { Text(text = labelId) },
         singleLine = isSingleLine,
         textStyle = TextStyle(
-            fontSize = 21.sp,
+            fontSize = 22.sp,
             color = MaterialTheme.colors.onBackground,
             textAlign = TextAlign.Center,
         ),
         modifier = modifier
-            .size(width = 65.dp, height = 70.dp)
-            .padding(bottom = 3.dp, start = 3.dp, end = 3.dp),
+            .size(width = 60.dp, height = 70.dp),
+//            .padding(bottom = 3.dp, start = 3.dp, end = 3.dp),
 //            .fillMaxWidth(),
         enabled = enabled,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
         keyboardActions = onAction,
-        colors = TextFieldDefaults.textFieldColors()
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = txtfld_backg)
     )
 }
 
