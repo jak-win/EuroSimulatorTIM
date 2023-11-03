@@ -1,8 +1,8 @@
 package pl.wincenciuk.eurosimulator.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -170,5 +171,33 @@ fun ScoreInput(
         imeAction = imeAction,
         onAction = onAction,
         onScoreChanged = onScoreChanged
+    )
+}
+
+@Composable
+fun PoInputField(
+    modifier: Modifier = Modifier,
+    valueState: MutableState<String>,
+    enabled: Boolean = true,
+    isSingleLine: Boolean = true,
+    keyboardType: KeyboardType = KeyboardType.Number,
+    imeAction: ImeAction = ImeAction.Next,
+    onAction: KeyboardActions = KeyboardActions.Default
+) {
+    BasicTextField(
+        value = valueState.value,
+        onValueChange = { valueState.value = it },
+        singleLine = isSingleLine,
+        textStyle = TextStyle(
+        color = MaterialTheme.colors.onBackground, fontSize = 17.sp, textAlign = TextAlign.Center
+        ),
+        modifier = modifier,
+        enabled = enabled,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+        decorationBox = { innerTextField ->  
+            Row(modifier = Modifier.border(width = 1.dp, color = background_color).size(width = 23.dp, height = 26.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
+                innerTextField()
+            }
+        }
     )
 }

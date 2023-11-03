@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import pl.wincenciuk.eurosimulator.presentation.screens.GroupStageScreen
 import pl.wincenciuk.eurosimulator.presentation.screens.LoginScreen
+import pl.wincenciuk.eurosimulator.presentation.screens.PlayoffScreen
 import pl.wincenciuk.eurosimulator.presentation.screens.SplashScreen
 
 @Composable
@@ -19,7 +20,10 @@ fun AppNavigation() {
             LoginScreen(navController)
         }
         composable(AppScreens.GroupStageScreen.name){
-            GroupStageScreen()
+            GroupStageScreen(navController)
+        }
+        composable(AppScreens.PlayoffScreen.name){
+            PlayoffScreen()
         }
     }
 }

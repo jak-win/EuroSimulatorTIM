@@ -22,14 +22,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import pl.wincenciuk.eurosimulator.R
 import pl.wincenciuk.eurosimulator.components.ScoreInput
 import pl.wincenciuk.eurosimulator.components.background_color
 import pl.wincenciuk.eurosimulator.components.green_check
 import pl.wincenciuk.eurosimulator.components.little_green_check
+import pl.wincenciuk.eurosimulator.data.model.MatchResult
+import pl.wincenciuk.eurosimulator.data.model.Team
+import pl.wincenciuk.eurosimulator.presentation.navigation.AppScreens
 
 @Composable
-fun GroupStageScreen() {
+fun GroupStageScreen(navController: NavController) {
     val groups = listOf("A", "B", "C", "D", "E", "F")
     val (teams) = remember {
         mutableStateOf(listOf(
@@ -59,7 +63,7 @@ fun GroupStageScreen() {
             ) {
                 groups.forEach { group ->
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { navController.navigate(AppScreens.PlayoffScreen.name) },
                         modifier = Modifier.padding(2.dp),
                         shape = RoundedCornerShape(15.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -326,15 +330,3 @@ fun TeamTable(teams: List<Team>) {
         }
     }
 }
-
-data class Team(
-    val name: String,
-    val shortName: String,
-    var matchesPlayed: Int = 0,
-    var matchesWon: Int = 0,
-    var matchesDrawn: Int = 0,
-    var matchesLost: Int = 0,
-    var points: Int = 0,
-)
-
-data class MatchResult(val scoreA: Int, val scoreB: Int)
