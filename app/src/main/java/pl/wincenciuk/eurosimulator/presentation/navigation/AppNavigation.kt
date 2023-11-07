@@ -8,6 +8,7 @@ import pl.wincenciuk.eurosimulator.presentation.screens.GroupStageScreen
 import pl.wincenciuk.eurosimulator.presentation.screens.LoginScreen
 import pl.wincenciuk.eurosimulator.presentation.screens.PlayoffScreen
 import pl.wincenciuk.eurosimulator.presentation.screens.SplashScreen
+import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
 
 @Composable
 fun AppNavigation() {
@@ -20,7 +21,7 @@ fun AppNavigation() {
             LoginScreen(navController)
         }
         composable(AppScreens.GroupStageScreen.name){
-            GroupStageScreen(navController)
+            GroupStageScreen(viewModel = EuroViewModel())
         }
         composable(AppScreens.PlayoffScreen.name){
             PlayoffScreen()

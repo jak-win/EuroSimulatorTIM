@@ -9,9 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,28 +20,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import pl.wincenciuk.eurosimulator.R
 import pl.wincenciuk.eurosimulator.components.ScoreInput
 import pl.wincenciuk.eurosimulator.components.background_color
 import pl.wincenciuk.eurosimulator.components.green_check
 import pl.wincenciuk.eurosimulator.components.little_green_check
-import pl.wincenciuk.eurosimulator.data.model.MatchResult
+import pl.wincenciuk.eurosimulator.data.model.EuroMatchResult
 import pl.wincenciuk.eurosimulator.data.model.Team
-import pl.wincenciuk.eurosimulator.presentation.navigation.AppScreens
+import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
 
 @Composable
-fun GroupStageScreen(navController: NavController) {
+fun GroupStageScreen(viewModel: EuroViewModel) {
     val groups = listOf("A", "B", "C", "D", "E", "F")
-    val (teams) = remember {
-        mutableStateOf(listOf(
-            Team("Poland","POL"),
-            Team("Germany","GER"),
-            Team("France", "FRA"),
-            Team("Spain", "SPA")
-        ))
-    }
-    val (matchResult, setMatchResult) = remember { mutableStateOf(MutableList(6) { MatchResult(0, 0) })  }
+    val (matchResult, setMatchResult) = remember { mutableStateOf(MutableList(6) { EuroMatchResult(0, 0) })  }
+    val groupData by viewModel.groupData.collectAsState(emptyList())
+    val (selectedGroup, setSelectedGroup) = remember { mutableStateOf(groups[0]) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -61,9 +52,14 @@ fun GroupStageScreen(navController: NavController) {
                 verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.Center
             ) {
-                groups.forEach { group ->
+                groups.forEach { groupInfo ->
                     Button(
-                        onClick = { navController.navigate(AppScreens.PlayoffScreen.name) },
+                        onClick = {
+//                            GlobalScope.launch {
+                            setSelectedGroup(groupInfo)
+//                                  viewModel.changeGroup(groupInfo)
+//                        }
+                                  },
                         modifier = Modifier.padding(2.dp),
                         shape = RoundedCornerShape(15.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -71,13 +67,15 @@ fun GroupStageScreen(navController: NavController) {
                             contentColor = Color.White
                         )
                     ) {
-                        Text(text = group)
+                        Text(text = groupInfo)
                     }
                 }
             }
+            val selectedGroupData = groupData.find { it.group == selectedGroup }
+            selectedGroupData?.let {groupInfo ->
             // Group Table
             Text(
-                text = "Group A",
+                text = "Group ${groupInfo.group}",
                 color = Color.White,
                 style = MaterialTheme.typography.h4,
                 textAlign = TextAlign.Center
@@ -91,7 +89,7 @@ fun GroupStageScreen(navController: NavController) {
                 border = BorderStroke(2.dp, Color.Gray),
                 elevation = 10.dp
             ) {
-                    TeamTable(teams)
+                    TeamTable(groupInfo.teams)
             }
             // Fields to fill the results
             Spacer(modifier = Modifier.height(16.dp))
@@ -107,45 +105,46 @@ fun GroupStageScreen(navController: NavController) {
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = 30.dp)
             ) {
-         for (i in 0 until teams.size - 1) {
-             for (j in i + 1 until teams.size) {
-                 val teamA = teams[i]
-                 val teamB = teams[j]
-                 val result = matchResult[i * 2 + j - (i * 1)]
+                for (i in 0 until groupInfo.teams.size - 1) {
+                    for (j in i + 1 until groupInfo.teams.size) {
+                        val teamA = groupInfo.teams[i]
+                        val teamB = groupInfo.teams[j]
+                        val result = matchResult[i * 2 + j - (i * 1)]
 
-                 MatchResultInput(
-                     teamA = teamA.shortName,
-                     teamB = teamB.shortName,
-                     matchResult = result,
-                    onResultChanged = { newResult ->
-                        val updatedMatchResult = matchResult.toMutableList()
-                        updatedMatchResult[i * 2 + j - (i + 1)] = newResult
-                        setMatchResult(updatedMatchResult)
+                        MatchResultInput(
+                            teamA = teamA.shortName,
+                            teamB = teamB.shortName,
+                            matchResult = result,
+                            onResultChanged = { newResult ->
+                                val updatedMatchResult = matchResult.toMutableList()
+                                updatedMatchResult[i * 2 + j - (i + 1)] = newResult
+                                setMatchResult(updatedMatchResult)
 
-                        if (newResult.scoreA > newResult.scoreB) {
-                            teamA.matchesPlayed++
-                            teamA.matchesWon++
-                            teamA.points += 3
-                            teamB.matchesPlayed++
-                            teamB.matchesLost++
-                        } else if (newResult.scoreA < newResult.scoreB) {
-                            teamA.matchesPlayed++
-                            teamA.matchesLost++
-                            teamB.matchesPlayed++
-                            teamB.matchesWon++
-                            teamB.points += 3
-                        } else {
-                            // It's a draw
-                            teamA.matchesPlayed++
-                            teamA.matchesDrawn++
-                            teamA.points++
-                            teamB.matchesPlayed++
-                            teamB.matchesDrawn++
-                            teamB.points++
-                        }
-                    })
-             }
-         }
+                                if (newResult.scoreA > newResult.scoreB) {
+                                    teamA.matchesPlayed++
+                                    teamA.matchesWon++
+                                    teamA.points += 3
+                                    teamB.matchesPlayed++
+                                    teamB.matchesLost++
+                                } else if (newResult.scoreA < newResult.scoreB) {
+                                    teamA.matchesPlayed++
+                                    teamA.matchesLost++
+                                    teamB.matchesPlayed++
+                                    teamB.matchesWon++
+                                    teamB.points += 3
+                                } else {
+                                    // It's a draw
+                                    teamA.matchesPlayed++
+                                    teamA.matchesDrawn++
+                                    teamA.points++
+                                    teamB.matchesPlayed++
+                                    teamB.matchesDrawn++
+                                    teamB.points++
+                                }
+                            })
+                    }
+                }
+            }
             }
         }
     }
@@ -154,14 +153,15 @@ fun GroupStageScreen(navController: NavController) {
 fun MatchResultInput(
     teamA: String,
     teamB: String,
-    matchResult: MatchResult,
-    onResultChanged: (MatchResult) -> Unit) {
+    matchResult: EuroMatchResult,
+    onResultChanged: (EuroMatchResult) -> Unit) {
 
-    val scoreA = rememberSaveable() { mutableStateOf(matchResult.scoreA.toString()) }
-    val scoreB = rememberSaveable() { mutableStateOf(matchResult.scoreB.toString()) }
+    val scoreA = rememberSaveable { mutableStateOf(matchResult.scoreA.toString()) }
+    val scoreB = rememberSaveable { mutableStateOf(matchResult.scoreB.toString()) }
     val showPredictions = remember { mutableStateOf(false) }
     val buttonEnabled = remember { mutableStateOf(true) }
-    
+
+
     Surface(
         modifier = Modifier
             .padding(start = 7.dp, end = 7.dp, top = 20.dp),
@@ -211,7 +211,7 @@ fun MatchResultInput(
                     textAlign = TextAlign.Center)
                 Button(
                     onClick = {
-                              onResultChanged(MatchResult(scoreA.value.toIntOrNull() ?: 0, scoreB.value.toIntOrNull() ?: 0))
+                              onResultChanged(EuroMatchResult(scoreA.value.toIntOrNull() ?: 0, scoreB.value.toIntOrNull() ?: 0))
                               showPredictions.value = true
                               buttonEnabled.value = false
                               },
