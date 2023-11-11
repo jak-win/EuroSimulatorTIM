@@ -36,6 +36,11 @@ fun GroupStageScreen(viewModel: EuroViewModel) {
     val groupData by viewModel.groupData.collectAsState(emptyList())
     val (selectedGroup, setSelectedGroup) = remember { mutableStateOf(groups[0]) }
 
+//    val matchResults = groups.map { EuroMatchResult(0, 0) }
+//    val (currentGroupMatchResult, setCurrentGroupMatchResult) = remember {
+//        mutableStateOf(matchResults.first())
+//    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = background_color
@@ -54,11 +59,9 @@ fun GroupStageScreen(viewModel: EuroViewModel) {
             ) {
                 groups.forEach { groupInfo ->
                     Button(
-                        onClick = {
-//                            GlobalScope.launch {
-                            setSelectedGroup(groupInfo)
-//                                  viewModel.changeGroup(groupInfo)
-//                        }
+                        onClick = { setSelectedGroup(groupInfo)
+//                            val index = groups.indexOf(groupInfo)
+//                            setCurrentGroupMatchResult(matchResults[index])
                                   },
                         modifier = Modifier.padding(2.dp),
                         shape = RoundedCornerShape(15.dp),
@@ -110,6 +113,7 @@ fun GroupStageScreen(viewModel: EuroViewModel) {
                         val teamA = groupInfo.teams[i]
                         val teamB = groupInfo.teams[j]
                         val result = matchResult[i * 2 + j - (i * 1)]
+//                        val result = currentGroupMatchResult
 
                         MatchResultInput(
                             teamA = teamA.shortName,
@@ -119,6 +123,10 @@ fun GroupStageScreen(viewModel: EuroViewModel) {
                                 val updatedMatchResult = matchResult.toMutableList()
                                 updatedMatchResult[i * 2 + j - (i + 1)] = newResult
                                 setMatchResult(updatedMatchResult)
+
+//                                val updatedMatchResult = matchResults.toMutableList()
+//                                updatedMatchResult[i * 2 + j - (i + 1)] = newResult
+//                                setCurrentGroupMatchResult(newResult)
 
                                 if (newResult.scoreA > newResult.scoreB) {
                                     teamA.matchesPlayed++
@@ -141,7 +149,9 @@ fun GroupStageScreen(viewModel: EuroViewModel) {
                                     teamB.matchesDrawn++
                                     teamB.points++
                                 }
-                            })
+                            },
+                            selectedGroup = selectedGroup,
+                            onGroupChange = { setSelectedGroup(groupInfo.group) })
                     }
                 }
             }
@@ -154,7 +164,9 @@ fun MatchResultInput(
     teamA: String,
     teamB: String,
     matchResult: EuroMatchResult,
-    onResultChanged: (EuroMatchResult) -> Unit) {
+    onResultChanged: (EuroMatchResult) -> Unit,
+    selectedGroup: String,
+    onGroupChange: () -> Unit) {
 
     val scoreA = rememberSaveable { mutableStateOf(matchResult.scoreA.toString()) }
     val scoreB = rememberSaveable { mutableStateOf(matchResult.scoreB.toString()) }
@@ -263,6 +275,15 @@ fun MatchResultInput(
                 Text(text = "34%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text(text = "33%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             }
+        }
+    }
+    DisposableEffect(selectedGroup) {
+        onDispose {
+            // Reset score and enable button when the group changes
+            scoreA.value = "0"
+            scoreB.value = "0"
+            showPredictions.value = false
+            buttonEnabled.value = true
         }
     }
 }
