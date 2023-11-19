@@ -1,36 +1,33 @@
 package pl.wincenciuk.eurosimulator.presentation.screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import pl.wincenciuk.eurosimulator.R
-import pl.wincenciuk.eurosimulator.components.ScoreInput
-import pl.wincenciuk.eurosimulator.components.background_color
-import pl.wincenciuk.eurosimulator.components.green_check
-import pl.wincenciuk.eurosimulator.components.little_green_check
+import pl.wincenciuk.eurosimulator.components.*
 import pl.wincenciuk.eurosimulator.data.model.EuroMatchResult
 import pl.wincenciuk.eurosimulator.data.model.Team
+import pl.wincenciuk.eurosimulator.presentation.navigation.AppScreens
 import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
 
 @Composable
-fun GroupStageScreen(viewModel: EuroViewModel) {
+fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
     val groups = listOf("A", "B", "C", "D", "E", "F")
     val (matchResult, setMatchResult) = remember { mutableStateOf(MutableList(6) { EuroMatchResult(0, 0) })  }
     val groupData by viewModel.groupData.collectAsState(emptyList())
@@ -47,33 +44,27 @@ fun GroupStageScreen(viewModel: EuroViewModel) {
     ) {
         Column(
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.background(Brush.linearGradient(colors = listOf(
+                background_color, background_color2)))
         ) {
-            // Buttons for changing groups
-            Row(
+
+            Card(
                 modifier = Modifier
-                    .padding(5.dp)
-                    .padding(top = 10.dp),
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                groups.forEach { groupInfo ->
-                    Button(
-                        onClick = { setSelectedGroup(groupInfo)
-//                            val index = groups.indexOf(groupInfo)
-//                            setCurrentGroupMatchResult(matchResults[index])
-                                  },
-                        modifier = Modifier.padding(2.dp),
-                        shape = RoundedCornerShape(15.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Gray,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text(text = groupInfo)
-                    }
-                }
+                    .padding(9.dp)
+                    .padding(bottom = 10.dp, top = 10.dp),
+                backgroundColor = Color.Gray,
+                shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(3.dp, Color.White),
+                elevation = 15.dp) {
+                Text(
+                    text = "Below there are all 6 matches of a given group.\n Please, complete them all, then click the next button to move on",
+                    modifier = Modifier.padding(4.dp),
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold)
             }
+
             val selectedGroupData = groupData.find { it.group == selectedGroup }
             selectedGroupData?.let {groupInfo ->
             // Group Table
@@ -106,7 +97,8 @@ fun GroupStageScreen(viewModel: EuroViewModel) {
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(bottom = 30.dp)
+                    .padding(bottom = 30.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 for (i in 0 until groupInfo.teams.size - 1) {
                     for (j in i + 1 until groupInfo.teams.size) {
@@ -154,6 +146,22 @@ fun GroupStageScreen(viewModel: EuroViewModel) {
                             onGroupChange = { setSelectedGroup(groupInfo.group) })
                     }
                 }
+
+                Button(
+                    onClick = {
+                              val currentIndex = groups.indexOf(selectedGroup)
+                        if (currentIndex < groups.size - 1){
+                            val nextGroup = groups[currentIndex + 1]
+                            setSelectedGroup(nextGroup)
+                        } else {
+                            navController.navigate(AppScreens.PlayoffScreen.name)
+                        }
+                    },
+                    modifier = Modifier.padding(top = 30.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor =  Color.Gray, contentColor = Color.White)
+                ) {
+                    Text(text = "Next", fontSize = 20.sp)
+                }
             }
             }
         }
@@ -177,9 +185,9 @@ fun MatchResultInput(
     Surface(
         modifier = Modifier
             .padding(start = 7.dp, end = 7.dp, top = 20.dp),
-        color = Color.Gray,
+        color = Color.LightGray,
         shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp), //30
-        border = BorderStroke(3.dp, Color.White),
+        border = BorderStroke(4.dp, Color.White),
         elevation = 10.dp
     ) {
         Row(
@@ -202,7 +210,7 @@ fun MatchResultInput(
                 )
                 Text(
                     text = teamA,
-                    fontSize = 19.sp
+                    fontSize = 20.sp
                 )
             }
             ScoreInput(
@@ -252,7 +260,7 @@ fun MatchResultInput(
                 )
                 Text(
                     text = teamB,
-                    fontSize = 19.sp
+                    fontSize = 20.sp
                 )
             }
         }

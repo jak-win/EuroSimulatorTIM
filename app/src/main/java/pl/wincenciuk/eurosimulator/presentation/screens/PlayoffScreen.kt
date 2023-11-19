@@ -1,10 +1,7 @@
 package pl.wincenciuk.eurosimulator.presentation.screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -12,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -20,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import pl.wincenciuk.eurosimulator.R
 import pl.wincenciuk.eurosimulator.components.PoInputField
 import pl.wincenciuk.eurosimulator.components.background_color
+import pl.wincenciuk.eurosimulator.components.background_color2
 
 @Composable
 fun PlayoffScreen() {
@@ -39,7 +38,9 @@ fun PlayoffScreen() {
     ) {
         Column(
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.background(Brush.linearGradient(colors = listOf(
+                background_color, background_color2)))
         ) {
             Image(painterResource(id = R.drawable.knockout), contentDescription = "Playoff header")
             Row(

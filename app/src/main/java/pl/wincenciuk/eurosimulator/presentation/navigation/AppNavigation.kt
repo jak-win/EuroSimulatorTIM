@@ -21,7 +21,7 @@ fun AppNavigation() {
             LoginScreen(navController)
         }
         composable(AppScreens.GroupStageScreen.name){
-            GroupStageScreen(viewModel = EuroViewModel())
+            GroupStageScreen(viewModel = EuroViewModel(), navController)
         }
         composable(AppScreens.PlayoffScreen.name){
             PlayoffScreen()

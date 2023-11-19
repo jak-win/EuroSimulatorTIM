@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val background_color = Color(0xFF104977)
+val background_color2 = Color(0xFF00C099)
 val green_check = Color(0xFF0F7012)
 val little_green_check = Color(0xFFAEFFB0)
 val txtfld_backg = Color(0xFFA09D9D)
