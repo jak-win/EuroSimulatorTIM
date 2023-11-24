@@ -1,5 +1,6 @@
 package pl.wincenciuk.eurosimulator.presentation.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -26,17 +27,13 @@ import pl.wincenciuk.eurosimulator.data.model.Team
 import pl.wincenciuk.eurosimulator.presentation.navigation.AppScreens
 import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
     val groups = listOf("A", "B", "C", "D", "E", "F")
     val (matchResult, setMatchResult) = remember { mutableStateOf(MutableList(6) { EuroMatchResult(0, 0) })  }
     val groupData by viewModel.groupData.collectAsState(emptyList())
     val (selectedGroup, setSelectedGroup) = remember { mutableStateOf(groups[0]) }
-
-//    val matchResults = groups.map { EuroMatchResult(0, 0) }
-//    val (currentGroupMatchResult, setCurrentGroupMatchResult) = remember {
-//        mutableStateOf(matchResults.first())
-//    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -105,7 +102,6 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                         val teamA = groupInfo.teams[i]
                         val teamB = groupInfo.teams[j]
                         val result = matchResult[i * 2 + j - (i * 1)]
-//                        val result = currentGroupMatchResult
 
                         MatchResultInput(
                             teamA = teamA.shortName,
@@ -115,10 +111,6 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                                 val updatedMatchResult = matchResult.toMutableList()
                                 updatedMatchResult[i * 2 + j - (i + 1)] = newResult
                                 setMatchResult(updatedMatchResult)
-
-//                                val updatedMatchResult = matchResults.toMutableList()
-//                                updatedMatchResult[i * 2 + j - (i + 1)] = newResult
-//                                setCurrentGroupMatchResult(newResult)
 
                                 if (newResult.scoreA > newResult.scoreB) {
                                     teamA.matchesPlayed++
@@ -149,11 +141,21 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
 
                 Button(
                     onClick = {
-                              val currentIndex = groups.indexOf(selectedGroup)
-                        if (currentIndex < groups.size - 1){
+                        val currentIndex = groups.indexOf(selectedGroup)
+                        val currentGroupTeams = groupData.find { it.group == selectedGroup }?.teams
+                        val top3Teams = currentGroupTeams?.sortedByDescending { it.points }?.take(3)
+
+                            if (currentIndex < groups.size - 1){
                             val nextGroup = groups[currentIndex + 1]
+                            if (top3Teams != null) {
+                                viewModel.addAdvancingTeams(top3Teams)
+                            }
                             setSelectedGroup(nextGroup)
+
                         } else {
+                            if (top3Teams != null) {
+                                viewModel.addAdvancingTeams(top3Teams)
+                            }
                             navController.navigate(AppScreens.PlayoffScreen.name)
                         }
                     },

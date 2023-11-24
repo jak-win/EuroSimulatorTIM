@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +22,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 
 val background_color = Color(0xFF104977)
 val background_color2 = Color(0xFF00C099)
@@ -196,9 +201,20 @@ fun PoInputField(
         enabled = enabled,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
         decorationBox = { innerTextField ->  
-            Row(modifier = Modifier.border(width = 1.dp, color = background_color).size(width = 23.dp, height = 26.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
+            Row(modifier = Modifier
+                .border(width = 1.dp, color = background_color)
+                .size(width = 23.dp, height = 26.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
                 innerTextField()
             }
         }
     )
+}
+
+@Composable
+fun EuroLoader() {
+    val res = pl.wincenciuk.eurosimulator.R.drawable.euro_simulator_logo
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(res))
+    Box(modifier = Modifier, contentAlignment = Alignment.Center) {
+        LottieAnimation(composition = composition, iterations = LottieConstants.IterateForever)
+    }
 }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import pl.wincenciuk.eurosimulator.data.ApiService
 import pl.wincenciuk.eurosimulator.data.model.GroupData
+import pl.wincenciuk.eurosimulator.data.model.Team
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -24,6 +25,15 @@ class EuroViewModel : ViewModel() {
     private val _groupData = MutableStateFlow<List<GroupData>>(emptyList())
     val groupData: Flow<List<GroupData>> = _groupData.asStateFlow()
 
+    private val _allAdvancingTeams = MutableStateFlow<List<Team>>(emptyList())
+    val allAdvancingTeams: Flow<List<Team>> = _allAdvancingTeams.asStateFlow()
+
+    fun addAdvancingTeams(teams: List<Team>) {
+        val currentTeams = _allAdvancingTeams.value.toMutableList()
+        currentTeams.addAll(teams)
+        _allAdvancingTeams.value = currentTeams
+        Log.d("EuroViewModel", "CurrentTopTeams: $currentTeams")
+    }
     init {
         loadGroupData()
     }
@@ -33,14 +43,11 @@ class EuroViewModel : ViewModel() {
             try {
                 val response = groupService.getTeamData()
                 _groupData.value = response
-                Log.d("ViewModel", response.toString())
 
             } catch (e: java.lang.Exception){
                 Log.e("EuroViewModel", "${e.message}")
             }
         }
     }
-
-
 
 }

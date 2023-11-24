@@ -1,5 +1,6 @@
 package pl.wincenciuk.eurosimulator.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,14 +20,19 @@ import pl.wincenciuk.eurosimulator.R
 import pl.wincenciuk.eurosimulator.components.PoInputField
 import pl.wincenciuk.eurosimulator.components.background_color
 import pl.wincenciuk.eurosimulator.components.background_color2
+import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
 
 @Composable
-fun PlayoffScreen() {
+fun PlayoffScreen(viewModel: EuroViewModel) {
 
     var winnersFirstRound by remember { mutableStateOf(listOf("QF1", "QF2", "QF3", "QF4", "QF5", "QF6", "QF7", "QF8")) }
     var winnersSecondRound by remember { mutableStateOf(listOf("SF1", "SF2", "SF3", "SF4")) }
     var winnersThirdRound by remember { mutableStateOf(listOf("F1", "F2")) }
     var champion by remember { mutableStateOf("winner") }
+
+    val allAdavancedTeams by viewModel.allAdvancingTeams.collectAsState(emptyList())
+    Log.d("PlayoffScreen", "TopTeams: $allAdavancedTeams")
+
 
     LaunchedEffect(winnersFirstRound, winnersSecondRound, winnersThirdRound) {
 
@@ -49,15 +55,41 @@ fun PlayoffScreen() {
                 horizontalArrangement = Arrangement.Start
             ) {
                 //   1/8
-                Column(modifier = Modifier.padding(start = 15.dp)) {
-                    SingleMatchComponent("POL", "GER") {winner -> winnersFirstRound = winnersFirstRound.toMutableList().apply { set(0, winner) }}
-                    SingleMatchComponent("FRA", "SPA") {winner -> winnersFirstRound = winnersFirstRound.toMutableList().apply { set(1, winner) }}
-                    SingleMatchComponent("NOR", "ITA") {winner -> winnersFirstRound = winnersFirstRound.toMutableList().apply { set(2, winner) }}
-                    SingleMatchComponent("POR", "ENG") {winner -> winnersFirstRound = winnersFirstRound.toMutableList().apply { set(3, winner) }}
-                    SingleMatchComponent("AUS", "SWI") {winner -> winnersFirstRound = winnersFirstRound.toMutableList().apply { set(4, winner) }}
-                    SingleMatchComponent("BEL", "DEN") {winner -> winnersFirstRound = winnersFirstRound.toMutableList().apply { set(5, winner) }}
-                    SingleMatchComponent("CRO", "HUN") {winner -> winnersFirstRound = winnersFirstRound.toMutableList().apply { set(6, winner) }}
-                    SingleMatchComponent("SWE", "UKR") {winner -> winnersFirstRound = winnersFirstRound.toMutableList().apply { set(7, winner) }}
+                if (allAdavancedTeams.isNotEmpty()) {
+                    Column(modifier = Modifier.padding(start = 15.dp)) {
+                        SingleMatchComponent(allAdavancedTeams[0].shortName, allAdavancedTeams[5].shortName) { winner ->
+                            winnersFirstRound =
+                                winnersFirstRound.toMutableList().apply { set(0, winner) }
+                        }
+                        SingleMatchComponent(allAdavancedTeams[1].shortName, allAdavancedTeams[4].shortName) { winner ->
+                            winnersFirstRound =
+                                winnersFirstRound.toMutableList().apply { set(1, winner) }
+                        }
+                        SingleMatchComponent(allAdavancedTeams[2].shortName, allAdavancedTeams[3].shortName) { winner ->
+                            winnersFirstRound =
+                                winnersFirstRound.toMutableList().apply { set(2, winner) }
+                        }
+                        SingleMatchComponent(allAdavancedTeams[6].shortName, allAdavancedTeams[11].shortName) { winner ->
+                            winnersFirstRound =
+                                winnersFirstRound.toMutableList().apply { set(3, winner) }
+                        }
+                        SingleMatchComponent(allAdavancedTeams[7].shortName, allAdavancedTeams[10].shortName) { winner ->
+                            winnersFirstRound =
+                                winnersFirstRound.toMutableList().apply { set(4, winner) }
+                        }
+                        SingleMatchComponent(allAdavancedTeams[8].shortName, allAdavancedTeams[9].shortName) { winner ->
+                            winnersFirstRound =
+                                winnersFirstRound.toMutableList().apply { set(5, winner) }
+                        }
+                        SingleMatchComponent(allAdavancedTeams[12].shortName, allAdavancedTeams[16].shortName) { winner ->
+                            winnersFirstRound =
+                                winnersFirstRound.toMutableList().apply { set(6, winner) }
+                        }
+                        SingleMatchComponent(allAdavancedTeams[13].shortName, allAdavancedTeams[15].shortName) { winner ->
+                            winnersFirstRound =
+                                winnersFirstRound.toMutableList().apply { set(7, winner) }
+                        }
+                    }
                 }
                 // 1/4
                 Column(modifier = Modifier.padding(start = 15.dp)) {
