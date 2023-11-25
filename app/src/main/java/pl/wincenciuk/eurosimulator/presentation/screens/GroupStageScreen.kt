@@ -35,6 +35,10 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
     val groupData by viewModel.groupData.collectAsState(emptyList())
     val (selectedGroup, setSelectedGroup) = remember { mutableStateOf(groups[0]) }
 
+    LaunchedEffect(key1 = Unit) {
+        viewModel.loadGroupData()
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = background_color
@@ -42,129 +46,145 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.background(Brush.linearGradient(colors = listOf(
-                background_color, background_color2)))
+            modifier = Modifier.background(
+                Brush.linearGradient(
+                    colors = listOf(
+                        background_color, background_color2
+                    )
+                )
+            )
         ) {
 
-            Card(
-                modifier = Modifier
-                    .padding(9.dp)
-                    .padding(bottom = 10.dp, top = 10.dp),
-                backgroundColor = Color.Gray,
-                shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(3.dp, Color.White),
-                elevation = 15.dp) {
-                Text(
-                    text = "Below there are all 6 matches of a given group.\n Please, complete them all, then click the next button to move on",
-                    modifier = Modifier.padding(4.dp),
-                    textAlign = TextAlign.Center,
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold)
-            }
+            if (groupData.isEmpty()) {
+                EuroLoader()
+            } else {
+                Card(
+                    modifier = Modifier
+                        .padding(9.dp)
+                        .padding(bottom = 10.dp, top = 10.dp),
+                    backgroundColor = Color.Gray,
+                    shape = RoundedCornerShape(10.dp),
+                    border = BorderStroke(3.dp, Color.White),
+                    elevation = 15.dp
+                ) {
+                    Text(
+                        text = "Below there are all 6 matches of a given group.\n Please, complete them all, then click the next button to move on",
+                        modifier = Modifier.padding(4.dp),
+                        textAlign = TextAlign.Center,
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
 
-            val selectedGroupData = groupData.find { it.group == selectedGroup }
-            selectedGroupData?.let {groupInfo ->
-            // Group Table
-            Text(
-                text = "Group ${groupInfo.group}",
-                color = Color.White,
-                style = MaterialTheme.typography.h4,
-                textAlign = TextAlign.Center
-            )
-            Surface(
-                modifier = Modifier
-                    .padding(7.dp)
-                    .padding(top = 10.dp),
-                color = Color.Gray,
-                shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(2.dp, Color.Gray),
-                elevation = 10.dp
-            ) {
-                    TeamTable(groupInfo.teams)
-            }
-            // Fields to fill the results
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Enter the match results: ",
-                color = Color.White,
-                style = MaterialTheme.typography.h6
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+                val selectedGroupData = groupData.find { it.group == selectedGroup }
+                selectedGroupData?.let { groupInfo ->
+                    // Group Table
+                    Text(
+                        text = "Group ${groupInfo.group}",
+                        color = Color.White,
+                        style = MaterialTheme.typography.h4,
+                        textAlign = TextAlign.Center
+                    )
+                    Surface(
+                        modifier = Modifier
+                            .padding(7.dp)
+                            .padding(top = 10.dp),
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(2.dp, Color.Gray),
+                        elevation = 10.dp
+                    ) {
+                        TeamTable(groupInfo.teams)
+                    }
+                    // Fields to fill the results
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Enter the match results: ",
+                        color = Color.White,
+                        style = MaterialTheme.typography.h6
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(bottom = 30.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                for (i in 0 until groupInfo.teams.size - 1) {
-                    for (j in i + 1 until groupInfo.teams.size) {
-                        val teamA = groupInfo.teams[i]
-                        val teamB = groupInfo.teams[j]
-                        val result = matchResult[i * 2 + j - (i * 1)]
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .padding(bottom = 30.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        for (i in 0 until groupInfo.teams.size - 1) {
+                            for (j in i + 1 until groupInfo.teams.size) {
+                                val teamA = groupInfo.teams[i]
+                                val teamB = groupInfo.teams[j]
+                                val result = matchResult[i * 2 + j - (i * 1)]
 
-                        MatchResultInput(
-                            teamA = teamA.shortName,
-                            teamB = teamB.shortName,
-                            matchResult = result,
-                            onResultChanged = { newResult ->
-                                val updatedMatchResult = matchResult.toMutableList()
-                                updatedMatchResult[i * 2 + j - (i + 1)] = newResult
-                                setMatchResult(updatedMatchResult)
+                                MatchResultInput(
+                                    teamA = teamA.shortName,
+                                    teamB = teamB.shortName,
+                                    matchResult = result,
+                                    onResultChanged = { newResult ->
+                                        val updatedMatchResult = matchResult.toMutableList()
+                                        updatedMatchResult[i * 2 + j - (i + 1)] = newResult
+                                        setMatchResult(updatedMatchResult)
 
-                                if (newResult.scoreA > newResult.scoreB) {
-                                    teamA.matchesPlayed++
-                                    teamA.matchesWon++
-                                    teamA.points += 3
-                                    teamB.matchesPlayed++
-                                    teamB.matchesLost++
-                                } else if (newResult.scoreA < newResult.scoreB) {
-                                    teamA.matchesPlayed++
-                                    teamA.matchesLost++
-                                    teamB.matchesPlayed++
-                                    teamB.matchesWon++
-                                    teamB.points += 3
+                                        if (newResult.scoreA > newResult.scoreB) {
+                                            teamA.matchesPlayed++
+                                            teamA.matchesWon++
+                                            teamA.points += 3
+                                            teamB.matchesPlayed++
+                                            teamB.matchesLost++
+                                        } else if (newResult.scoreA < newResult.scoreB) {
+                                            teamA.matchesPlayed++
+                                            teamA.matchesLost++
+                                            teamB.matchesPlayed++
+                                            teamB.matchesWon++
+                                            teamB.points += 3
+                                        } else {
+                                            // It's a draw
+                                            teamA.matchesPlayed++
+                                            teamA.matchesDrawn++
+                                            teamA.points++
+                                            teamB.matchesPlayed++
+                                            teamB.matchesDrawn++
+                                            teamB.points++
+                                        }
+                                    },
+                                    selectedGroup = selectedGroup,
+                                    onGroupChange = { setSelectedGroup(groupInfo.group) })
+                            }
+                        }
+
+                        Button(
+                            onClick = {
+                                val currentIndex = groups.indexOf(selectedGroup)
+                                val currentGroupTeams =
+                                    groupData.find { it.group == selectedGroup }?.teams
+                                val top3Teams =
+                                    currentGroupTeams?.sortedByDescending { it.points }?.take(3)
+
+                                if (currentIndex < groups.size - 1) {
+                                    val nextGroup = groups[currentIndex + 1]
+                                    if (top3Teams != null) {
+                                        viewModel.addAdvancingTeams(top3Teams)
+                                    }
+                                    setSelectedGroup(nextGroup)
+
                                 } else {
-                                    // It's a draw
-                                    teamA.matchesPlayed++
-                                    teamA.matchesDrawn++
-                                    teamA.points++
-                                    teamB.matchesPlayed++
-                                    teamB.matchesDrawn++
-                                    teamB.points++
+                                    if (top3Teams != null) {
+                                        viewModel.addAdvancingTeams(top3Teams)
+                                    }
+                                    navController.navigate(AppScreens.PlayoffScreen.name)
                                 }
                             },
-                            selectedGroup = selectedGroup,
-                            onGroupChange = { setSelectedGroup(groupInfo.group) })
+                            modifier = Modifier.padding(top = 30.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.Gray,
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Text(text = "Next", fontSize = 20.sp)
+                        }
                     }
                 }
-
-                Button(
-                    onClick = {
-                        val currentIndex = groups.indexOf(selectedGroup)
-                        val currentGroupTeams = groupData.find { it.group == selectedGroup }?.teams
-                        val top3Teams = currentGroupTeams?.sortedByDescending { it.points }?.take(3)
-
-                            if (currentIndex < groups.size - 1){
-                            val nextGroup = groups[currentIndex + 1]
-                            if (top3Teams != null) {
-                                viewModel.addAdvancingTeams(top3Teams)
-                            }
-                            setSelectedGroup(nextGroup)
-
-                        } else {
-                            if (top3Teams != null) {
-                                viewModel.addAdvancingTeams(top3Teams)
-                            }
-                            navController.navigate(AppScreens.PlayoffScreen.name)
-                        }
-                    },
-                    modifier = Modifier.padding(top = 30.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor =  Color.Gray, contentColor = Color.White)
-                ) {
-                    Text(text = "Next", fontSize = 20.sp)
-                }
-            }
             }
         }
     }

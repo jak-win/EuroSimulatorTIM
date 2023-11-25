@@ -34,11 +34,9 @@ class EuroViewModel : ViewModel() {
         _allAdvancingTeams.value = currentTeams
         Log.d("EuroViewModel", "CurrentTopTeams: $currentTeams")
     }
-    init {
-        loadGroupData()
-    }
 
-    private fun loadGroupData(){
+
+     fun loadGroupData(){
         viewModelScope.launch {
             try {
                 val response = groupService.getTeamData()
