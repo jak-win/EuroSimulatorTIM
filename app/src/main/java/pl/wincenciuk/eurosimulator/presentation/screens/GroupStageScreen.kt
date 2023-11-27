@@ -20,7 +20,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import pl.wincenciuk.eurosimulator.R
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import pl.wincenciuk.eurosimulator.components.*
 import pl.wincenciuk.eurosimulator.data.model.EuroMatchResult
 import pl.wincenciuk.eurosimulator.data.model.Team
@@ -33,7 +34,7 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
     val groups = listOf("A", "B", "C", "D", "E", "F")
     val (matchResult, setMatchResult) = remember { mutableStateOf(MutableList(6) { EuroMatchResult(0, 0) })  }
     val groupData by viewModel.groupData.collectAsState(emptyList())
-    val (selectedGroup, setSelectedGroup) = remember { mutableStateOf(groups[0]) }
+    val selectedGroup by viewModel.selectedGroup.collectAsState("A")
 
     LaunchedEffect(key1 = Unit) {
         viewModel.loadGroupData()
@@ -54,7 +55,6 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                 )
             )
         ) {
-
             if (groupData.isEmpty()) {
                 EuroLoader()
             } else {
@@ -94,7 +94,7 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                         border = BorderStroke(2.dp, Color.Gray),
                         elevation = 10.dp
                     ) {
-                        TeamTable(groupInfo.teams)
+                        TeamTable(groupInfo.teams, viewModel)
                     }
                     // Fields to fill the results
                     Spacer(modifier = Modifier.height(16.dp))
@@ -126,30 +126,13 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                                         updatedMatchResult[i * 2 + j - (i + 1)] = newResult
                                         setMatchResult(updatedMatchResult)
 
-                                        if (newResult.scoreA > newResult.scoreB) {
-                                            teamA.matchesPlayed++
-                                            teamA.matchesWon++
-                                            teamA.points += 3
-                                            teamB.matchesPlayed++
-                                            teamB.matchesLost++
-                                        } else if (newResult.scoreA < newResult.scoreB) {
-                                            teamA.matchesPlayed++
-                                            teamA.matchesLost++
-                                            teamB.matchesPlayed++
-                                            teamB.matchesWon++
-                                            teamB.points += 3
-                                        } else {
-                                            // It's a draw
-                                            teamA.matchesPlayed++
-                                            teamA.matchesDrawn++
-                                            teamA.points++
-                                            teamB.matchesPlayed++
-                                            teamB.matchesDrawn++
-                                            teamB.points++
+                                        GlobalScope.launch {
+                                        viewModel.processMatchResult(teams = groupInfo.teams, matchResult = newResult, teamAIndex =  i, teamBIndex =  j)
                                         }
                                     },
                                     selectedGroup = selectedGroup,
-                                    onGroupChange = { setSelectedGroup(groupInfo.group) })
+                                    viewModel = viewModel,
+                                    onGroupChange = { viewModel.setSelectedGroup(groupInfo.group) })
                             }
                         }
 
@@ -166,7 +149,7 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                                     if (top3Teams != null) {
                                         viewModel.addAdvancingTeams(top3Teams)
                                     }
-                                    setSelectedGroup(nextGroup)
+                                    viewModel.setSelectedGroup(nextGroup)
 
                                 } else {
                                     if (top3Teams != null) {
@@ -196,6 +179,7 @@ fun MatchResultInput(
     matchResult: EuroMatchResult,
     onResultChanged: (EuroMatchResult) -> Unit,
     selectedGroup: String,
+    viewModel: EuroViewModel,
     onGroupChange: () -> Unit) {
 
     val scoreA = rememberSaveable { mutableStateOf(matchResult.scoreA.toString()) }
@@ -226,7 +210,7 @@ fun MatchResultInput(
                 modifier = Modifier.padding(end = 8.dp)
             ) {
                 Image(
-                    painterResource(id = R.drawable.flag_poland),
+                    painterResource(id =  viewModel.getCountryFlag(teamA)),
                     contentDescription = null,
                     modifier = Modifier.size(70.dp) //70
                 )
@@ -276,7 +260,7 @@ fun MatchResultInput(
             ) {
 
                 Image(
-                    painterResource(id = R.drawable.flag_germany),
+                    painterResource(id = viewModel.getCountryFlag(teamB)),
                     contentDescription = null,
                     modifier = Modifier.size(70.dp)
                 )
@@ -318,7 +302,7 @@ fun MatchResultInput(
     }
 }
 @Composable
-fun TeamTable(teams: List<Team>) {
+fun TeamTable(teams: List<Team>, viewModel: EuroViewModel) {
     val sortedTeams = teams.sortedByDescending { it.points }
 
     Column(modifier = Modifier.padding(3.dp)) {
@@ -352,7 +336,7 @@ fun TeamTable(teams: List<Team>) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        painterResource(id = R.drawable.flag_poland),
+                        painterResource(id = viewModel.getCountryFlag(team.shortName)),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp)
                     )

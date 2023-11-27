@@ -137,6 +137,7 @@ private fun SingleMatchComponent(
 
     val scoreA = rememberSaveable() { mutableStateOf("") }
     val scoreB = rememberSaveable() { mutableStateOf("") }
+    val viewModel = EuroViewModel()
 
     Surface(
         modifier = Modifier
@@ -154,7 +155,7 @@ private fun SingleMatchComponent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Image(
-                    painterResource(id = R.drawable.flag_poland),
+                    painterResource(id = viewModel.getCountryFlag(teamA)),
                     contentDescription = "flag",
                     modifier = Modifier.size(30.dp)
                 )
@@ -176,7 +177,7 @@ private fun SingleMatchComponent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Image(
-                    painterResource(id = R.drawable.flag_germany),
+                    painterResource(id = viewModel.getCountryFlag(teamB)),
                     contentDescription = "flag",
                     modifier = Modifier.size(30.dp)
                 )
