@@ -37,6 +37,19 @@ class EuroViewModel : ViewModel() {
     val selectedGroup: StateFlow<String> = _selectedGroup
 
 
+    private val _winnersFirstRound = MutableStateFlow(listOf("QF1", "QF2", "QF3", "QF4", "QF5", "QF6", "QF7", "QF8"))
+    val winnersFirstRound: StateFlow<List<String>> = _winnersFirstRound
+
+    private val _winnersSecondRound = MutableStateFlow(listOf("SF1", "SF2", "SF3", "SF4"))
+    val winnersSecondRound: StateFlow<List<String>> = _winnersSecondRound
+
+    private val _winnersThirdRound = MutableStateFlow(listOf("F1", "F2"))
+    val winnersThirdRound: StateFlow<List<String>> = _winnersThirdRound
+
+    private val _champion = MutableStateFlow("winner")
+    val champion: StateFlow<String> = _champion
+
+
     suspend fun loadGroupData(){
         withContext(Dispatchers.IO) {
             try {
@@ -130,5 +143,24 @@ class EuroViewModel : ViewModel() {
         _selectedGroup.value = group
     }
 
+
+    fun updateWinnersFirstRound(index: Int, winner: String) {
+        _winnersFirstRound.value = winnersFirstRound.value.toMutableList().apply { set(index, winner) }
+    }
+
+    fun updateWinnersSecondRound(index: Int, winner: String) {
+        _winnersSecondRound.value = winnersSecondRound.value.toMutableList().apply { set(index, winner) }
+    }
+
+    fun updateWinnersThirdRound(index: Int, winner: String) {
+        _winnersThirdRound.value = winnersThirdRound.value.toMutableList().apply { set(index, winner) }
+    }
+
+    fun updateChampion(winner: String) {
+        _champion.value = winner
+    }
+     fun getWinner(scoreA: String, scoreB: String, teamA: String, teamB: String): String {
+        return if (scoreA.toInt() > scoreB.toInt()) teamA else teamB
+    }
 
 }

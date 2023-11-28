@@ -1,5 +1,6 @@
 package pl.wincenciuk.eurosimulator.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -13,6 +14,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -207,10 +209,11 @@ fun PoInputField(
 
 @Composable
 fun EuroLoader() {
-    CircularProgressIndicator(
-        modifier = Modifier.width(65.dp).padding(top = 200.dp),
-        color = Color.Gray,
-        strokeWidth = 6.dp)
-    Text(text = "Loading...", modifier = Modifier.padding(top = 60.dp), color = Color.White, fontSize = 22.sp)
+//    CircularProgressIndicator(
+//        modifier = Modifier.width(65.dp).padding(top = 200.dp),
+//        color = Color.Gray,
+//        strokeWidth = 6.dp)
+    Image(painterResource(id = pl.wincenciuk.eurosimulator.R.drawable.euro_simulator_logo), contentDescription = null, modifier = Modifier.padding(top = 100.dp).size(130.dp))
+    Text(text = "Loading...", modifier = Modifier.padding(top = 20.dp), color = Color.White, fontSize = 22.sp)
     Text(text = "Select your new European champion!", modifier = Modifier.padding(top = 15.dp), color = Color.LightGray, fontSize = 17.sp)
 }

@@ -25,14 +25,13 @@ import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
 @Composable
 fun PlayoffScreen(viewModel: EuroViewModel) {
 
-    var winnersFirstRound by remember { mutableStateOf(listOf("QF1", "QF2", "QF3", "QF4", "QF5", "QF6", "QF7", "QF8")) }
-    var winnersSecondRound by remember { mutableStateOf(listOf("SF1", "SF2", "SF3", "SF4")) }
-    var winnersThirdRound by remember { mutableStateOf(listOf("F1", "F2")) }
-    var champion by remember { mutableStateOf("winner") }
+    val winnersFirstRound by viewModel.winnersFirstRound.collectAsState()
+    val winnersSecondRound by viewModel.winnersSecondRound.collectAsState()
+    val winnersThirdRound by viewModel.winnersThirdRound.collectAsState()
+    val champion by viewModel.champion.collectAsState()
 
-    val allAdavancedTeams by viewModel.allAdvancingTeams.collectAsState(emptyList())
-    Log.d("PlayoffScreen", "TopTeams: $allAdavancedTeams")
-
+    val allAdvancedTeams by viewModel.allAdvancingTeams.collectAsState(emptyList())
+    Log.d("PlayoffScreen", "TopTeams: $allAdvancedTeams")
 
     LaunchedEffect(winnersFirstRound, winnersSecondRound, winnersThirdRound) {
 
@@ -55,48 +54,46 @@ fun PlayoffScreen(viewModel: EuroViewModel) {
                 horizontalArrangement = Arrangement.Start
             ) {
                 //   1/8
-                if (allAdavancedTeams.isNotEmpty()) {
+                if (allAdvancedTeams.isNotEmpty()) {
                     Column(modifier = Modifier.padding(start = 15.dp)) {
-                        SingleMatchComponent(allAdavancedTeams[0].shortName, allAdavancedTeams[5].shortName) { winner ->
-                            winnersFirstRound =
-                                winnersFirstRound.toMutableList().apply { set(0, winner) }
-                        }
-                        SingleMatchComponent(allAdavancedTeams[1].shortName, allAdavancedTeams[4].shortName) { winner ->
-                            winnersFirstRound =
-                                winnersFirstRound.toMutableList().apply { set(1, winner) }
-                        }
-                        SingleMatchComponent(allAdavancedTeams[2].shortName, allAdavancedTeams[3].shortName) { winner ->
-                            winnersFirstRound =
-                                winnersFirstRound.toMutableList().apply { set(2, winner) }
-                        }
-                        SingleMatchComponent(allAdavancedTeams[6].shortName, allAdavancedTeams[11].shortName) { winner ->
-                            winnersFirstRound =
-                                winnersFirstRound.toMutableList().apply { set(3, winner) }
-                        }
-                        SingleMatchComponent(allAdavancedTeams[7].shortName, allAdavancedTeams[10].shortName) { winner ->
-                            winnersFirstRound =
-                                winnersFirstRound.toMutableList().apply { set(4, winner) }
-                        }
-                        SingleMatchComponent(allAdavancedTeams[8].shortName, allAdavancedTeams[9].shortName) { winner ->
-                            winnersFirstRound =
-                                winnersFirstRound.toMutableList().apply { set(5, winner) }
-                        }
-                        SingleMatchComponent(allAdavancedTeams[12].shortName, allAdavancedTeams[16].shortName) { winner ->
-                            winnersFirstRound =
-                                winnersFirstRound.toMutableList().apply { set(6, winner) }
-                        }
-                        SingleMatchComponent(allAdavancedTeams[13].shortName, allAdavancedTeams[15].shortName) { winner ->
-                            winnersFirstRound =
-                                winnersFirstRound.toMutableList().apply { set(7, winner) }
+                        SingleMatchComponent(allAdvancedTeams[0].shortName, allAdvancedTeams[5].shortName) { winner ->
+                            viewModel.updateWinnersFirstRound(index = 0, winner) }
+
+                        SingleMatchComponent(allAdvancedTeams[1].shortName, allAdvancedTeams[4].shortName) { winner ->
+                            viewModel.updateWinnersFirstRound(index = 1, winner) }
+
+                        SingleMatchComponent(allAdvancedTeams[2].shortName, allAdvancedTeams[3].shortName) { winner ->
+                            viewModel.updateWinnersFirstRound(index = 2, winner) }
+
+                        SingleMatchComponent(allAdvancedTeams[6].shortName, allAdvancedTeams[11].shortName) { winner ->
+                            viewModel.updateWinnersFirstRound(index = 3, winner) }
+
+                        SingleMatchComponent(allAdvancedTeams[7].shortName, allAdvancedTeams[10].shortName) { winner ->
+                            viewModel.updateWinnersFirstRound(index = 4, winner) }
+
+                        SingleMatchComponent(allAdvancedTeams[8].shortName, allAdvancedTeams[9].shortName) { winner ->
+                            viewModel.updateWinnersFirstRound(index = 5, winner) }
+
+                        SingleMatchComponent(allAdvancedTeams[12].shortName, allAdvancedTeams[16].shortName) { winner ->
+                            viewModel.updateWinnersFirstRound(index = 6, winner) }
+
+                        SingleMatchComponent(allAdvancedTeams[13].shortName, allAdvancedTeams[15].shortName) { winner ->
+                            viewModel.updateWinnersFirstRound(index = 7, winner) }
                         }
                     }
-                }
+
                 // 1/4
                 Column(modifier = Modifier.padding(start = 15.dp)) {
-                    SingleMatchComponent(teamA = winnersFirstRound[0], teamB = winnersFirstRound[1]) {winner -> winnersSecondRound  = winnersSecondRound.toMutableList().apply { set(0, winner) }}
-                    SingleMatchComponent(teamA = winnersFirstRound[2], teamB = winnersFirstRound[3]) {winner -> winnersSecondRound  = winnersSecondRound.toMutableList().apply { set(1, winner) }}
-                    SingleMatchComponent(teamA = winnersFirstRound[4], teamB = winnersFirstRound[5]) {winner -> winnersSecondRound  = winnersSecondRound.toMutableList().apply { set(2, winner) }}
-                    SingleMatchComponent(teamA = winnersFirstRound[6], teamB = winnersFirstRound[7]) {winner -> winnersSecondRound  = winnersSecondRound.toMutableList().apply { set(3, winner) }}
+                    for (i in 0 until 8 step 2) {
+                        val index = i / 2
+                        SingleMatchComponent(
+                            teamA = winnersFirstRound[i],
+                            teamB = winnersFirstRound[i + 1],
+                            onNextRound = { winner ->
+                                viewModel.updateWinnersSecondRound(index, winner)
+                            }
+                        )
+                    }
                 }
                 // 1/2
                 Column(
@@ -108,8 +105,16 @@ fun PlayoffScreen(viewModel: EuroViewModel) {
                         contentDescription = "medals",
                         modifier = Modifier.size(80.dp)
                     )
-                    SingleMatchComponent(teamA = winnersSecondRound[0], teamB = winnersSecondRound[1]) {winner -> winnersThirdRound = winnersThirdRound.toMutableList().apply { set(0 , winner) }}
-                    SingleMatchComponent(teamA = winnersSecondRound[2], teamB = winnersSecondRound[3]) {winner -> winnersThirdRound = winnersThirdRound.toMutableList().apply { set(1 , winner) }}
+                    for (i in 0 until 4 step 2) {
+                        val index = i / 2
+                        SingleMatchComponent(
+                            teamA = winnersSecondRound[i],
+                            teamB = winnersSecondRound[i + 1],
+                            onNextRound = { winner ->
+                                viewModel.updateWinnersThirdRound(index, winner)
+                            }
+                        )
+                    }
                 }
                 //  Final
                 Column(
@@ -121,7 +126,7 @@ fun PlayoffScreen(viewModel: EuroViewModel) {
                         contentDescription = "trophy",
                         modifier = Modifier.size(60.dp)
                     )
-                    SingleMatchComponent(teamA = winnersThirdRound[0], teamB = winnersThirdRound[1]) {winner -> champion = winner}
+                    SingleMatchComponent(teamA = winnersThirdRound[0], teamB = winnersThirdRound[1]) {winner -> viewModel.updateChampion(winner)}
                 }
             }
         }
@@ -132,7 +137,7 @@ fun PlayoffScreen(viewModel: EuroViewModel) {
 private fun SingleMatchComponent(
     teamA: String,
     teamB: String,
-    onNextRound: (String) -> Unit
+    onNextRound: (String) -> Unit,
 ) {
 
     val scoreA = rememberSaveable() { mutableStateOf("") }
@@ -197,7 +202,7 @@ private fun SingleMatchComponent(
     }
     LaunchedEffect(scoreA.value, scoreB.value) {
         if (scoreA.value.isNotEmpty() && scoreB.value.isNotEmpty()) {
-            val winner = if (scoreA.value.toInt() > scoreB.value.toInt()) teamA else teamB
+            val winner = viewModel.getWinner(scoreA.value, scoreB.value, teamA, teamB)
             onNextRound(winner)
         }
     }
