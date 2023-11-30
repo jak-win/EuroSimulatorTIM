@@ -1,8 +1,13 @@
 package pl.wincenciuk.eurosimulator.presentation.viewmodel
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +32,11 @@ class EuroViewModel : ViewModel() {
 
     private val groupService = retrofit.create(ApiService::class.java)
 
+    private val auth: FirebaseAuth = Firebase.auth
+
+    private val _loading = MutableStateFlow(false)
+    val loading: Flow<Boolean> = _loading
+
     private val _groupData = MutableStateFlow<List<GroupData>>(emptyList())
     val groupData: Flow<List<GroupData>> = _groupData.asStateFlow()
 
@@ -50,8 +60,40 @@ class EuroViewModel : ViewModel() {
     val champion: StateFlow<String> = _champion
 
 
+    fun createUserWithEmailAndPassword(email: String, password: String, context: Context, navigate: () -> Unit)
+    = viewModelScope.launch {
+        if (!_loading.value) {
+            _loading.value = true
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener { task ->
+                    Log.d("Firebase", "signInWithEmailAndPassword: User logged in! $task")
+                    navigate()
+                }
+                .addOnFailureListener { task ->
+                    Toast.makeText(context, "Password must contain at least 6 characters", Toast.LENGTH_SHORT).show()
+                    Log.d("Firebase", "signInWithEmailAndPassword: User not logged in! $task")
+
+                }
+                    _loading.value = false
+        }
+    }
+
+    fun signInWithEmailAndPassword(email: String, password: String, context: Context, navigate: () -> Unit)
+    = viewModelScope.launch {
+
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener { task ->
+                    Log.d("Firebase", "signInWithEmailAndPassword: User logged in! $task")
+                    navigate()
+                }
+                .addOnFailureListener { task ->
+                    Toast.makeText(context, "Incorrect login details", Toast.LENGTH_SHORT).show()
+                    Log.d("Firebase", "signInWithEmailAndPassword: User not logged in! $task")
+
+                }
+    }
     suspend fun loadGroupData(){
-        withContext(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = withContext(Dispatchers.IO) {
                     groupService.getTeamData()
@@ -140,24 +182,37 @@ class EuroViewModel : ViewModel() {
     }
 
     fun setSelectedGroup(group: String) {
-        _selectedGroup.value = group
+        viewModelScope.launch {
+            _selectedGroup.value = group
+        }
     }
 
 
     fun updateWinnersFirstRound(index: Int, winner: String) {
-        _winnersFirstRound.value = winnersFirstRound.value.toMutableList().apply { set(index, winner) }
+        viewModelScope.launch {
+            _winnersFirstRound.value =
+                winnersFirstRound.value.toMutableList().apply { set(index, winner) }
+        }
     }
 
     fun updateWinnersSecondRound(index: Int, winner: String) {
-        _winnersSecondRound.value = winnersSecondRound.value.toMutableList().apply { set(index, winner) }
+        viewModelScope.launch {
+            _winnersSecondRound.value =
+                winnersSecondRound.value.toMutableList().apply { set(index, winner) }
+        }
     }
 
     fun updateWinnersThirdRound(index: Int, winner: String) {
-        _winnersThirdRound.value = winnersThirdRound.value.toMutableList().apply { set(index, winner) }
+        viewModelScope.launch {
+            _winnersThirdRound.value =
+                winnersThirdRound.value.toMutableList().apply { set(index, winner) }
+        }
     }
 
     fun updateChampion(winner: String) {
-        _champion.value = winner
+        viewModelScope.launch {
+            _champion.value = winner
+        }
     }
      fun getWinner(scoreA: String, scoreB: String, teamA: String, teamB: String): String {
         return if (scoreA.toInt() > scoreB.toInt()) teamA else teamB

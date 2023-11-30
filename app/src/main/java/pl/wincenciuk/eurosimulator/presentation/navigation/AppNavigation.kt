@@ -20,7 +20,7 @@ fun AppNavigation() {
             SplashScreen(navController)
         }
         composable(AppScreens.LoginScreen.name){
-            LoginScreen(navController)
+            LoginScreen(navController, viewModel)
         }
         composable(AppScreens.GroupStageScreen.name){
             GroupStageScreen(viewModel = viewModel, navController)

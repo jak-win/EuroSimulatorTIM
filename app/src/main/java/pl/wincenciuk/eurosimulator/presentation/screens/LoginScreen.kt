@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,10 +32,12 @@ import pl.wincenciuk.eurosimulator.components.EmailInput
 import pl.wincenciuk.eurosimulator.components.PasswordInput
 import pl.wincenciuk.eurosimulator.components.background_color
 import pl.wincenciuk.eurosimulator.presentation.navigation.AppScreens
+import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, viewModel: EuroViewModel) {
     val showLoginForm = remember { mutableStateOf(true) }
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -54,11 +57,17 @@ fun LoginScreen(navController: NavController) {
 
             if (showLoginForm.value) {
                 UserForm(navController, loading = false, isCreatingAccount = false) { email, password ->
-                    //TODO: Create Firebase Login
+                    //Log in
+                    viewModel.signInWithEmailAndPassword(email, password, context){
+                        navController.navigate(AppScreens.GroupStageScreen.name)
+                    }
                 }
             } else {
                 UserForm(navController, loading = false, isCreatingAccount = true) { email, password ->
-                    //TODO: Create Firebase Account
+                    //Create account
+                   viewModel.createUserWithEmailAndPassword(email, password, context) {
+                       navController.navigate(AppScreens.GroupStageScreen.name)
+                   }
                 }
             }
 
@@ -165,7 +174,7 @@ fun UserForm(
             validInputs = valid,
         ) {
             onDone(email.value.trim(), password.value.trim())
-            navController.navigate(AppScreens.GroupStageScreen.name)
+//            navController.navigate(AppScreens.GroupStageScreen.name)
             keyboardController?.hide()
         }
     }

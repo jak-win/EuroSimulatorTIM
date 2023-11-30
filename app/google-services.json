@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "200742498111",
+    "project_id": "eurosimulator-d03d4",
+    "storage_bucket": "eurosimulator-d03d4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:200742498111:android:4b5b9c04a85803efda2d8a",
+        "android_client_info": {
+          "package_name": "pl.wincenciuk.eurosimulator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1Wb8FuO59k6U4TSGeTtS0Gea31vE6jGs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
