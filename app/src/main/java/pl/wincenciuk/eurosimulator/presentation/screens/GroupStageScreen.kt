@@ -1,6 +1,7 @@
 package pl.wincenciuk.eurosimulator.presentation.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -27,6 +28,7 @@ import pl.wincenciuk.eurosimulator.data.model.EuroMatchResult
 import pl.wincenciuk.eurosimulator.data.model.Team
 import pl.wincenciuk.eurosimulator.presentation.navigation.AppScreens
 import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
+import kotlin.math.roundToInt
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -115,7 +117,8 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                             for (j in i + 1 until groupInfo.teams.size) {
                                 val teamA = groupInfo.teams[i]
                                 val teamB = groupInfo.teams[j]
-                                val result = matchResult[i * 2 + j - (i * 1)]
+                                val matchIndex = i * 2 + j - (i * 1)
+                                val result = matchResult[matchIndex]
 
                                 MatchResultInput(
                                     teamA = teamA.shortName,
@@ -128,10 +131,12 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
 
                                         GlobalScope.launch {
                                         viewModel.processMatchResult(teams = groupInfo.teams, matchResult = newResult, teamAIndex =  i, teamBIndex =  j)
+                                            viewModel.storePrediction(groupInfo.group, matchIndex, newResult)
                                         }
                                     },
                                     selectedGroup = selectedGroup,
                                     viewModel = viewModel,
+                                    matchIndex = matchIndex,
                                     onGroupChange = { viewModel.setSelectedGroup(groupInfo.group) })
                             }
                         }
@@ -179,6 +184,7 @@ fun MatchResultInput(
     matchResult: EuroMatchResult,
     onResultChanged: (EuroMatchResult) -> Unit,
     selectedGroup: String,
+    matchIndex: Int,
     viewModel: EuroViewModel,
     onGroupChange: () -> Unit) {
 
@@ -187,6 +193,16 @@ fun MatchResultInput(
     val showPredictions = remember { mutableStateOf(false) }
     val buttonEnabled = remember { mutableStateOf(true) }
 
+
+    LaunchedEffect(selectedGroup ) {
+        val predictions = viewModel.getMatchPredictions(selectedGroup, matchIndex)
+        val totalPredictions = predictions.size
+        val teamAPercentage = ((predictions.count { it.scoreA > it.scoreB }.toFloat() / totalPredictions) * 100).roundToInt()
+        val teamBPercentage = ((predictions.count { it.scoreA < it.scoreB }.toFloat() / totalPredictions) * 100).roundToInt()
+        val drawPercentage = ((predictions.count { it.scoreA == it.scoreB }.toFloat() / totalPredictions) * 100).roundToInt()
+
+        Log.d("Percentage", "total: $totalPredictions, A: $teamAPercentage, B: $teamBPercentage, Draw: $drawPercentage")
+    }
 
     Surface(
         modifier = Modifier
