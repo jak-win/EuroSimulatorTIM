@@ -117,7 +117,7 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                             for (j in i + 1 until groupInfo.teams.size) {
                                 val teamA = groupInfo.teams[i]
                                 val teamB = groupInfo.teams[j]
-                                val matchIndex = i * 2 + j - (i * 1)
+                                val matchIndex = (i * (2 * 4 - i - 1)) / 2 + j - i - 1
                                 val result = matchResult[matchIndex]
 
                                 MatchResultInput(
@@ -126,7 +126,7 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                                     matchResult = result,
                                     onResultChanged = { newResult ->
                                         val updatedMatchResult = matchResult.toMutableList()
-                                        updatedMatchResult[i * 2 + j - (i + 1)] = newResult
+                                        updatedMatchResult[(i * (2 * 4 - i - 1)) / 2 + j - i - 1] = newResult
                                         setMatchResult(updatedMatchResult)
 
                                         GlobalScope.launch {
@@ -193,6 +193,9 @@ fun MatchResultInput(
     val showPredictions = remember { mutableStateOf(false) }
     val buttonEnabled = remember { mutableStateOf(true) }
 
+    val teamAPercentageState = remember { mutableStateOf(0) }
+    val teamBPercentageState = remember { mutableStateOf(0) }
+    val drawPercentageState = remember { mutableStateOf(0) }
 
     LaunchedEffect(selectedGroup ) {
         val predictions = viewModel.getMatchPredictions(selectedGroup, matchIndex)
@@ -200,6 +203,10 @@ fun MatchResultInput(
         val teamAPercentage = ((predictions.count { it.scoreA > it.scoreB }.toFloat() / totalPredictions) * 100).roundToInt()
         val teamBPercentage = ((predictions.count { it.scoreA < it.scoreB }.toFloat() / totalPredictions) * 100).roundToInt()
         val drawPercentage = ((predictions.count { it.scoreA == it.scoreB }.toFloat() / totalPredictions) * 100).roundToInt()
+
+        teamAPercentageState.value = teamAPercentage
+        teamBPercentageState.value = teamBPercentage
+        drawPercentageState.value = drawPercentage
 
         Log.d("Percentage", "total: $totalPredictions, A: $teamAPercentage, B: $teamBPercentage, Draw: $drawPercentage")
     }
@@ -301,9 +308,9 @@ fun MatchResultInput(
             textAlign = TextAlign.Center)
         } else {
 
-                Text(text = "33%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Text(text = "34%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Text(text = "33%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(text = "${teamAPercentageState.value}%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(text = "${drawPercentageState.value}%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(text = "${teamBPercentageState.value}%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

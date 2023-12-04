@@ -147,6 +147,7 @@ class EuroViewModel : ViewModel() {
     ) {
         val matchRef = firestoreRef.collection("predictions").document(group).collection("matches").document("match$matchIndex")
         matchRef.update("predictions", FieldValue.arrayUnion(prediction))
+//        matchRef.set(prediction)
     }
 
     suspend fun getMatchPredictions(group: String, matchIndex: Int): List<EuroMatchResult> {
@@ -161,27 +162,6 @@ class EuroViewModel : ViewModel() {
             emptyList()
         }
     }
-//    fun getPredictions(
-//        group: String,
-//        matchIndex: Int
-//    ): Flow<List<EuroMatchResult>> {
-//        val matchRef = firestoreRef.collection("predictions").document(group).collection("matches").document("match$matchIndex")
-//
-//        return callbackFlow {
-//            val listener = matchRef.addSnapshotListener { snapshot, error ->
-//                if (error != null) {
-//                    close(error)
-//                    return@addSnapshotListener
-//                }
-//
-//                val prediction = snapshot?.toObject(EuroMatchResult::class.java)
-//                if (prediction != null) {
-//                    trySend(listOf(prediction))
-//                }
-//            }
-//            awaitClose { listener.remove()}
-//        }
-//    }
 
     fun addAdvancingTeams(teams: List<Team>) {
         viewModelScope.launch {
@@ -263,7 +243,14 @@ class EuroViewModel : ViewModel() {
         }
     }
      fun getWinner(scoreA: String, scoreB: String, teamA: String, teamB: String): String {
-        return if (scoreA.toInt() > scoreB.toInt()) teamA else teamB
+        return if (scoreA.toInt() > scoreB.toInt()){
+            teamA
+        } else if (scoreA.toInt() < scoreB.toInt()) {
+            teamB
+        } else {
+            throw java.lang.IllegalArgumentException("Mus")
+        }
+
     }
 
 }

@@ -1,6 +1,7 @@
 package pl.wincenciuk.eurosimulator.presentation.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -143,6 +145,7 @@ private fun SingleMatchComponent(
     val scoreA = rememberSaveable() { mutableStateOf("") }
     val scoreB = rememberSaveable() { mutableStateOf("") }
     val viewModel = EuroViewModel()
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier
@@ -200,10 +203,15 @@ private fun SingleMatchComponent(
             }
         }
     }
-    LaunchedEffect(scoreA.value, scoreB.value) {
+    LaunchedEffect(scoreA.value, scoreB.value, context) {
         if (scoreA.value.isNotEmpty() && scoreB.value.isNotEmpty()) {
-            val winner = viewModel.getWinner(scoreA.value, scoreB.value, teamA, teamB)
-            onNextRound(winner)
+            try {
+                val winner = viewModel.getWinner(scoreA.value, scoreB.value, teamA, teamB)
+                onNextRound(winner)
+            } catch (e: java.lang.IllegalArgumentException) {
+                Toast.makeText(context, "You must declare the winner of the match", Toast.LENGTH_SHORT).show()
+            }
+
         }
     }
     Spacer(modifier = Modifier.height(10.dp))

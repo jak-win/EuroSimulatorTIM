@@ -142,13 +142,13 @@ fun PasswordInput(
             imeAction = imeAction
         ),
         visualTransformation = visualTransformation,
-        trailingIcon = { PassswordVisibility(passwordVisibility = passwordVisibility) },
+        trailingIcon = { PasswordVisibility(passwordVisibility = passwordVisibility) },
         keyboardActions = onAction
     )
 }
 
 @Composable
-fun PassswordVisibility(passwordVisibility: MutableState<Boolean>) {
+fun PasswordVisibility(passwordVisibility: MutableState<Boolean>) {
     val visible = passwordVisibility.value
     IconButton(onClick = { passwordVisibility.value = !visible}) {
         Icons.Default.Close
