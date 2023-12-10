@@ -114,21 +114,21 @@ class EuroViewModel : ViewModel() {
         return when (shortName) {
             "POL" -> R.drawable.flag_poland
             "GER" -> R.drawable.flag_germany
-            "SWE" -> R.drawable.flag_sweden
+            "ALB" -> R.drawable.flag_albania
             "SLO" -> R.drawable.flag_slovakia
             "SPA" -> R.drawable.flag_spain
             "ITA" -> R.drawable.flag_italy
-            "WAL" -> R.drawable.flag_wales
+            "GRE" -> R.drawable.flag_greece
             "SWI" -> R.drawable.flag_switzerland
             "TUR" -> R.drawable.flag_turkey
             "BEL" -> R.drawable.flag_belgium3
             "DEN" -> R.drawable.flag_denmark
-            "NOR" -> R.drawable.flag_norway
-            "FIN" -> R.drawable.flag_finland
+            "ROM" -> R.drawable.flag_romania
+            "SRB" -> R.drawable.flag_serbia
             "NED" -> R.drawable.flag_netherlands
             "AUS" -> R.drawable.flag_austria
             "UKR" -> R.drawable.flag_ukraine
-            "MAC" -> R.drawable.flag_macedonia
+            "SVN" -> R.drawable.flag_slovenia
             "ENG" -> R.drawable.flag_england
             "CRO" -> R.drawable.flag_croatia
             "CZE" -> R.drawable.flag_czech
