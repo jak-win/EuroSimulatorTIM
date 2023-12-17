@@ -19,22 +19,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import pl.wincenciuk.eurosimulator.R
-import pl.wincenciuk.eurosimulator.data.ApiService
 import pl.wincenciuk.eurosimulator.data.model.EuroMatchResult
 import pl.wincenciuk.eurosimulator.data.model.GroupData
 import pl.wincenciuk.eurosimulator.data.model.Predictions
 import pl.wincenciuk.eurosimulator.data.model.Team
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import pl.wincenciuk.eurosimulator.data.repository.EuroRepository
 
-class EuroViewModel : ViewModel() {
+class EuroViewModel(private val repository: EuroRepository) : ViewModel() {
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://jak-win.github.io/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val groupService = retrofit.create(ApiService::class.java)
 
     private val auth: FirebaseAuth = Firebase.auth
     private val firestoreRef = FirebaseFirestore.getInstance()
@@ -50,7 +42,6 @@ class EuroViewModel : ViewModel() {
 
     private val _selectedGroup = MutableStateFlow("A")
     val selectedGroup: StateFlow<String> = _selectedGroup
-
 
     private val _winnersFirstRound = MutableStateFlow(listOf("QF1", "QF2", "QF3", "QF4", "QF5", "QF6", "QF7", "QF8"))
     val winnersFirstRound: StateFlow<List<String>> = _winnersFirstRound
@@ -100,9 +91,7 @@ class EuroViewModel : ViewModel() {
     suspend fun loadGroupData(){
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = withContext(Dispatchers.IO) {
-                    groupService.getTeamData()
-                }
+                val response = repository.getTeamData()
                 _groupData.value = response
             } catch (e: java.lang.Exception){
                 Log.e("EuroViewModel", "${e.message}")

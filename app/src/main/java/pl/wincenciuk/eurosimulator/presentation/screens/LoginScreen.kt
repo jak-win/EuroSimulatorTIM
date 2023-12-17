@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import org.koin.androidx.compose.getViewModel
 import pl.wincenciuk.eurosimulator.R
 import pl.wincenciuk.eurosimulator.components.EmailInput
 import pl.wincenciuk.eurosimulator.components.PasswordInput
@@ -35,7 +36,8 @@ import pl.wincenciuk.eurosimulator.presentation.navigation.AppScreens
 import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
 
 @Composable
-fun LoginScreen(navController: NavController, viewModel: EuroViewModel) {
+fun LoginScreen(navController: NavController) {
+    val viewModel = getViewModel<EuroViewModel>()
     val showLoginForm = remember { mutableStateOf(true) }
     val context = LocalContext.current
 
@@ -127,14 +129,18 @@ fun UserForm(
             Column {
                 if (isCreatingAccount) Text(
                     text = "Please enter a valid email and password that is at least 6 characters",
-                    modifier = Modifier.padding(4.dp).padding(top = 10.dp, bottom = 10.dp),
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .padding(top = 10.dp, bottom = 10.dp),
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     fontSize = 19.sp
                 )
                 else Text(
                     text = "Welcome to our app! Please, log in to your existing account or create a new one",
-                    modifier = Modifier.padding(4.dp).padding(top = 10.dp, bottom = 10.dp),
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .padding(top = 10.dp, bottom = 10.dp),
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     fontSize = 19.sp

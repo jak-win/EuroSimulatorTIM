@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.androidx.compose.getViewModel
 import pl.wincenciuk.eurosimulator.R
 import pl.wincenciuk.eurosimulator.components.PoInputField
 import pl.wincenciuk.eurosimulator.components.background_color
@@ -144,7 +145,7 @@ private fun SingleMatchComponent(
 
     val scoreA = rememberSaveable() { mutableStateOf("") }
     val scoreB = rememberSaveable() { mutableStateOf("") }
-    val viewModel = EuroViewModel()
+    val viewModel = getViewModel<EuroViewModel>()
     val context = LocalContext.current
 
     Surface(
