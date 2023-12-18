@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -16,12 +14,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import pl.wincenciuk.eurosimulator.R
 import pl.wincenciuk.eurosimulator.data.model.EuroMatchResult
 import pl.wincenciuk.eurosimulator.data.model.GroupData
-import pl.wincenciuk.eurosimulator.data.model.Predictions
 import pl.wincenciuk.eurosimulator.data.model.Team
 import pl.wincenciuk.eurosimulator.data.repository.EuroRepository
 
@@ -29,7 +25,6 @@ class EuroViewModel(private val repository: EuroRepository) : ViewModel() {
 
 
     private val auth: FirebaseAuth = Firebase.auth
-    private val firestoreRef = FirebaseFirestore.getInstance()
 
     private val _loading = MutableStateFlow(false)
     val loading: Flow<Boolean> = _loading
@@ -129,27 +124,16 @@ class EuroViewModel(private val repository: EuroRepository) : ViewModel() {
         }
     }
 
-    fun storePrediction(
+    suspend fun storePrediction(
         group: String,
         matchIndex: Int,
         prediction: EuroMatchResult
     ) {
-        val matchRef = firestoreRef.collection("predictions").document(group).collection("matches").document("match$matchIndex")
-        matchRef.update("predictions", FieldValue.arrayUnion(prediction))
-//        matchRef.set(prediction)
+        repository.storePrediction(group, matchIndex, prediction)
     }
 
     suspend fun getMatchPredictions(group: String, matchIndex: Int): List<EuroMatchResult> {
-        return try {
-            val snapShot = firestoreRef.collection("predictions").document(group).collection("matches").document("match$matchIndex").get().await()
-            val predictions = snapShot.toObject(Predictions::class.java)?.predictions ?: emptyList()
-            Log.d("VM Firestore", "$predictions")
-            predictions
-
-        } catch (e: Exception) {
-            Log.e("VM Firestore", "Error getting predictions: ${e.message}")
-            emptyList()
-        }
+        return repository.getMatchPredictions(group, matchIndex)
     }
 
     fun addAdvancingTeams(teams: List<Team>) {
@@ -237,7 +221,7 @@ class EuroViewModel(private val repository: EuroRepository) : ViewModel() {
         } else if (scoreA.toInt() < scoreB.toInt()) {
             teamB
         } else {
-            throw java.lang.IllegalArgumentException("Mus")
+            throw java.lang.IllegalArgumentException("Draw not allowed")
         }
 
     }

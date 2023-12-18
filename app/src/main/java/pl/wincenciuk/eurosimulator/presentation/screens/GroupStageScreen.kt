@@ -20,8 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import pl.wincenciuk.eurosimulator.components.*
 import pl.wincenciuk.eurosimulator.data.model.EuroMatchResult
@@ -129,7 +129,7 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                                         updatedMatchResult[(i * (2 * 4 - i - 1)) / 2 + j - i - 1] = newResult
                                         setMatchResult(updatedMatchResult)
 
-                                        GlobalScope.launch {
+                                        viewModel.viewModelScope.launch {
                                         viewModel.processMatchResult(teams = groupInfo.teams, matchResult = newResult, teamAIndex =  i, teamBIndex =  j)
                                             viewModel.storePrediction(groupInfo.group, matchIndex, newResult)
                                         }
