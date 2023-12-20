@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import pl.wincenciuk.eurosimulator.R
-import pl.wincenciuk.eurosimulator.components.EmailInput
-import pl.wincenciuk.eurosimulator.components.PasswordInput
-import pl.wincenciuk.eurosimulator.components.background_color
+import pl.wincenciuk.eurosimulator.presentation.components.EmailInput
+import pl.wincenciuk.eurosimulator.presentation.components.PasswordInput
+import pl.wincenciuk.eurosimulator.presentation.components.background_color
 import pl.wincenciuk.eurosimulator.presentation.navigation.AppScreens
 import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
 

@@ -1,4 +1,4 @@
-package pl.wincenciuk.eurosimulator.components
+package pl.wincenciuk.eurosimulator.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border

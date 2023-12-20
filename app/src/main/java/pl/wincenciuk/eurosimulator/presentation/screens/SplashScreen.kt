@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import pl.wincenciuk.eurosimulator.R
-import pl.wincenciuk.eurosimulator.components.background_color
+import pl.wincenciuk.eurosimulator.presentation.components.background_color
 import pl.wincenciuk.eurosimulator.presentation.navigation.AppScreens
 
 @Composable

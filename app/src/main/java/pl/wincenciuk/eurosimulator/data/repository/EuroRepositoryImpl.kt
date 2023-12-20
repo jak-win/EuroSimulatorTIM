@@ -6,17 +6,17 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import pl.wincenciuk.eurosimulator.data.ApiService
+import pl.wincenciuk.eurosimulator.data.service.ApiService
 import pl.wincenciuk.eurosimulator.data.model.EuroMatchResult
 import pl.wincenciuk.eurosimulator.data.model.GroupData
 import pl.wincenciuk.eurosimulator.data.model.Predictions
 
-class EuroRepositoryImpl(private val groupService: ApiService): EuroRepository {
+class EuroRepositoryImpl(private val apiService: ApiService): EuroRepository {
 
     private val firestoreRef = FirebaseFirestore.getInstance()
     override suspend fun getTeamData(): List<GroupData> {
         return withContext(Dispatchers.IO) {
-            groupService.getTeamData()
+            apiService.getTeamData()
         }
     }
 

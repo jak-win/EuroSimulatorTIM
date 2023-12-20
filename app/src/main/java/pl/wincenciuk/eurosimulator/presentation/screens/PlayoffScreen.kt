@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.getViewModel
 import pl.wincenciuk.eurosimulator.R
-import pl.wincenciuk.eurosimulator.components.PoInputField
-import pl.wincenciuk.eurosimulator.components.background_color
-import pl.wincenciuk.eurosimulator.components.background_color2
+import pl.wincenciuk.eurosimulator.presentation.components.PoInputField
+import pl.wincenciuk.eurosimulator.presentation.components.background_color
+import pl.wincenciuk.eurosimulator.presentation.components.background_color2
 import pl.wincenciuk.eurosimulator.presentation.viewmodel.EuroViewModel
 
 @Composable
@@ -48,7 +48,8 @@ fun PlayoffScreen(viewModel: EuroViewModel) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.background(Brush.linearGradient(colors = listOf(
-                background_color, background_color2)))
+                background_color, background_color2
+            )))
         ) {
             Image(painterResource(id = R.drawable.knockout), contentDescription = "Playoff header")
             Row(

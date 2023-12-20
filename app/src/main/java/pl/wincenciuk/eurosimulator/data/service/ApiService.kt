@@ -1,4 +1,4 @@
-package pl.wincenciuk.eurosimulator.data
+package pl.wincenciuk.eurosimulator.data.service
 
 import pl.wincenciuk.eurosimulator.data.model.GroupData
 import retrofit2.http.GET
