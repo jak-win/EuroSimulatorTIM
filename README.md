@@ -1,5 +1,5 @@
 # Euro Simulator
-An application that allows the user to simulate the course of Euro 2024 in football. Thanks to the application's integration with a database, the player is able to check the predictions of other users.
+An application made in Kotlin, using Jetpack Compose to create the UI layer, which allows the user to simulate the Euro 2024 football tournament. By integrating the app with the Cloud Firestore database, the player is able to check the predictions of other users.
 
 ## Screenshots of the 3 main application screens:
 ### Login Screen:
