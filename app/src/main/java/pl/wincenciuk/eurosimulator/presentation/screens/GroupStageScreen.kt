@@ -63,7 +63,7 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                 Card(
                     modifier = Modifier
                         .padding(9.dp)
-                        .padding(bottom = 10.dp, top = 10.dp),
+                        .padding(bottom = 10.dp, top = 5.dp),
                     backgroundColor = Color.Gray,
                     shape = RoundedCornerShape(10.dp),
                     border = BorderStroke(3.dp, Color.White),
@@ -74,7 +74,8 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                         modifier = Modifier.padding(4.dp),
                         textAlign = TextAlign.Center,
                         color = Color.White,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp
                     )
                 }
 
@@ -85,12 +86,13 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                         text = "Group ${groupInfo.group}",
                         color = Color.White,
                         style = MaterialTheme.typography.h4,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontSize = 25.sp
                     )
                     Surface(
                         modifier = Modifier
                             .padding(7.dp)
-                            .padding(top = 10.dp),
+                            .padding(top = 2.dp),
                         color = Color.Gray,
                         shape = RoundedCornerShape(10.dp),
                         border = BorderStroke(2.dp, Color.Gray),
@@ -99,13 +101,14 @@ fun GroupStageScreen(viewModel: EuroViewModel, navController: NavController) {
                         TeamTable(groupInfo.teams, viewModel)
                     }
                     // Fields to fill the results
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(5.dp))
                     Text(
                         text = "Enter the match results: ",
                         color = Color.White,
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.h6,
+                        fontSize = 15.sp
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(5.dp))
 
                     Column(
                         modifier = Modifier
@@ -213,7 +216,7 @@ fun MatchResultInput(
 
     Surface(
         modifier = Modifier
-            .padding(start = 7.dp, end = 7.dp, top = 20.dp),
+            .padding(start = 7.dp, end = 7.dp, top = 10.dp),
         color = Color.LightGray,
         shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp), //30
         border = BorderStroke(4.dp, Color.White),
@@ -223,7 +226,7 @@ fun MatchResultInput(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp)
-                .padding(start = 15.dp, end = 15.dp, bottom = 5.dp),
+                .padding(start = 10.dp, end = 10.dp, bottom = 5.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -268,7 +271,7 @@ fun MatchResultInput(
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(backgroundColor = green_check, contentColor = Color.White, disabledBackgroundColor = little_green_check),
                     enabled = buttonEnabled.value) {
-                    Text(text = "✓", fontSize = 12.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+                    Text(text = "✓", fontSize = 10.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
                 }
             }
 
@@ -305,7 +308,8 @@ fun MatchResultInput(
         Text(
             text = "Confirm the result to see other players predictions",
             modifier = Modifier.padding(7.dp),
-            textAlign = TextAlign.Center)
+            textAlign = TextAlign.Center,
+            fontSize = 14.sp)
         } else {
 
                 Text(text = "${teamAPercentageState.value}%", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -346,7 +350,7 @@ fun TeamTable(teams: List<Team>, viewModel: EuroViewModel) {
                     text = titles,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.width(50.dp)
+     //               modifier = Modifier.width(50.dp)
                 )
             }
         }
@@ -367,7 +371,7 @@ fun TeamTable(teams: List<Team>, viewModel: EuroViewModel) {
                         team.name,
                         textAlign = TextAlign.Start,
                         modifier = Modifier
-                            .width(120.dp)
+                            .width(110.dp)
                             .padding(start = 10.dp)
                     )
                     listOf(
@@ -379,7 +383,7 @@ fun TeamTable(teams: List<Team>, viewModel: EuroViewModel) {
                         Text(
                             text = value.toString(),
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.width(50.dp)
+                            modifier = Modifier.width(26.dp)
                         )
                     }
                 }

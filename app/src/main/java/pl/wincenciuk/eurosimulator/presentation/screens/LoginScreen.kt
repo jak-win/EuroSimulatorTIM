@@ -134,7 +134,7 @@ fun UserForm(
                         .padding(top = 10.dp, bottom = 10.dp),
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    fontSize = 19.sp
+                    fontSize = 16.sp
                 )
                 else Text(
                     text = "Welcome to our app! Please, log in to your existing account or create a new one",
@@ -143,7 +143,7 @@ fun UserForm(
                         .padding(top = 10.dp, bottom = 10.dp),
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    fontSize = 19.sp
+                    fontSize = 16.sp
                 )
 
                 Surface(modifier = Modifier.padding(top = 0.dp),
